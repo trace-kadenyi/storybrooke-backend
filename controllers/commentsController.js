@@ -344,89 +344,154 @@ const createCommentReply = async (req, res) => {
 };
 
 // DELETE REPLY
+// const deleteReply = async (req, res) => {
+//   // check if no params
+//   if (!req?.params?.id) {
+//     res.status(400).json({ message: "No comment id provided" });
+//     return;
+//   }
+
+//   //   get comment id from params
+//   const commentId = req?.params?.id;
+
+//   //   check if comment id is valid
+//   const comment = await Comment.findOne({ _id: commentId });
+
+//   if (!comment) {
+//     res.status(404).json({ message: "Comment not found" });
+//     return;
+//   }
+
+//   // check if the comment has a reply with the given id
+//   const reply = comment.reply.find((reply) => reply._id == req.body.replyId);
+
+//   if (!reply) {
+//     res.status(404).json({ message: "Reply not found" });
+//     return;
+//   }
+
+//   try {
+//     // delete reply from comment
+//     const comment = await Comment.findById(commentId).exec();
+//     comment.reply = comment.reply.filter(
+//       (reply) => reply._id != req.body.replyId
+//     );
+//     await comment.save();
+
+//     // delete reply from story
+//     const storyComment = await Story.findOne({
+//       comments: { $elemMatch: { _id: commentId } },
+//     }).exec();
+
+//     storyComment.comments.forEach((comment) => {
+//       comment.reply = comment.reply.filter(
+//         (reply) => reply._id != req.body.replyId
+//       );
+//     });
+
+//     await storyComment.save();
+
+//     // delete reply from genre
+//     const genreStories = await Genre.find({
+//       stories: { $elemMatch: { comments: { $elemMatch: { _id: commentId } } } },
+//     });
+//     genreStories.forEach(async (genre) => {
+//       const story = genre.stories.find((story) =>
+//         story.comments.find((comment) => comment._id == commentId)
+//       );
+//       const comment = story.comments.find(
+//         (comment) => comment._id == commentId
+//       );
+//       comment.reply = comment.reply.filter(
+//         (reply) => reply._id != req.body.replyId
+//       );
+//       await genre.save();
+//     });
+
+//     // // delete reply from user
+//     // const userStories = await User.find({
+//     //   stories: { $elemMatch: { comments: { $elemMatch: { _id: commentId } } } },
+//     // });
+
+//     // userStories.forEach(async (user) => {
+//     //   const story = user.stories.find((story) =>
+//     //     story.comments.find((comment) => comment._id == commentId)
+//     //   );
+//     //   const comment = story.comments.find(
+//     //     (comment) => comment._id == commentId
+//     //   );
+//     //   comment.reply = comment.reply.filter(
+//     //     (reply) => reply._id != req.body.replyId
+//     //   );
+//     //   await user.save();
+//     // });
+
+//     res.status(200).json({ message: "Reply deleted" });
+//   } catch (err) {
+//     res.status(400).json({ message: err.message });
+//   }
+// };
+
 const deleteReply = async (req, res) => {
   // check if no params
   if (!req?.params?.id) {
-    res.status(400).json({ message: "No comment id provided" });
+    res.status(400).json({ message: "No reply id provided" });
     return;
   }
 
-  //   get comment id from params
-  const commentId = req?.params?.id;
+  //   get reply id from params
+  const replyId = req?.params?.id;
 
-  //   check if comment id is valid
-  const comment = await Comment.findOne({ _id: commentId });
+  //   loop through all the comments to find the one with the reply
+  const comments = await Comment.find({});
+
+  let comment;
+
+  comments.forEach((c) => {
+    c.reply.forEach((r) => {
+      if (r._id == replyId) {
+        comment = c;
+      }
+    });
+  });
 
   if (!comment) {
-    res.status(404).json({ message: "Comment not found" });
-    return;
-  }
-
-  // check if the comment has a reply with the given id
-  const reply = comment.reply.find((reply) => reply._id == req.body.replyId);
-
-  if (!reply) {
     res.status(404).json({ message: "Reply not found" });
     return;
   }
 
   try {
     // delete reply from comment
-    const comment = await Comment.findById(commentId).exec();
-    comment.reply = comment.reply.filter(
-      (reply) => reply._id != req.body.replyId
-    );
+    comment.reply = comment.reply.filter((reply) => reply._id != replyId);
     await comment.save();
 
     // delete reply from story
     const storyComment = await Story.findOne({
-      comments: { $elemMatch: { _id: commentId } },
+      comments: { $elemMatch: { _id: comment._id } },
     }).exec();
 
     storyComment.comments.forEach((comment) => {
-      comment.reply = comment.reply.filter(
-        (reply) => reply._id != req.body.replyId
-      );
+      comment.reply = comment.reply.filter((reply) => reply._id != replyId);
     });
 
     await storyComment.save();
 
     // delete reply from genre
     const genreStories = await Genre.find({
-      stories: { $elemMatch: { comments: { $elemMatch: { _id: commentId } } } },
+      stories: {
+        $elemMatch: { comments: { $elemMatch: { _id: comment._id } } },
+      },
     });
     genreStories.forEach(async (genre) => {
       const story = genre.stories.find((story) =>
-        story.comments.find((comment) => comment._id == commentId)
+        story.comments.find((comment) => comment._id == comment._id)
       );
       const comment = story.comments.find(
-        (comment) => comment._id == commentId
+        (comment) => comment._id == comment._id
       );
-      comment.reply = comment.reply.filter(
-        (reply) => reply._id != req.body.replyId
-      );
+      comment.reply = comment.reply.filter((reply) => reply._id != replyId);
       await genre.save();
     });
-
-    // // delete reply from user
-    // const userStories = await User.find({
-    //   stories: { $elemMatch: { comments: { $elemMatch: { _id: commentId } } } },
-    // });
-
-    // userStories.forEach(async (user) => {
-    //   const story = user.stories.find((story) =>
-    //     story.comments.find((comment) => comment._id == commentId)
-    //   );
-    //   const comment = story.comments.find(
-    //     (comment) => comment._id == commentId
-    //   );
-    //   comment.reply = comment.reply.filter(
-    //     (reply) => reply._id != req.body.replyId
-    //   );
-    //   await user.save();
-    // });
-
-    res.status(200).json({ message: "Reply deleted" });
   } catch (err) {
     res.status(400).json({ message: err.message });
   }
