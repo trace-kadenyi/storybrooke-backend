@@ -28,14 +28,10 @@ const UserSchema = new Schema({
     type: Array,
     default: [],
   },
-  // stories: {
-  //   type: [Story.schema],
-  //   default: [],
-  // },
-  profile: {
-    type: Profile.schema,
-    default: null,
-    required: true,
+  profileId: {
+    type: Schema.Types.ObjectId,
+    ref: Profile,
+    // required: true,
   },
   password: {
     type: String,
