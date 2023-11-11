@@ -61,7 +61,7 @@ const updateProfile = async (req, res) => {
     req.body.username.slice(1).toLowerCase();
 
   // check if profile exists
-  const profileExists = await User.findOne({
+  const profileExists = await Profile.findOne({
     username: newUserName,
   }).exec();
 
@@ -74,7 +74,7 @@ const updateProfile = async (req, res) => {
   const { base64 } = req.body;
 
   // get date from old profile
-  const dateJoined = profileExists.profile.dateJoined;
+  const dateJoined = profileExists.dateJoined;
 
   // create new profile
   const profile = new Profile({
@@ -123,10 +123,10 @@ const updateProfile = async (req, res) => {
     const result = await profile.save();
 
     // save the new profile in the user's profile field
-    await User.findOneAndUpdate(
-      { username: newUserName },
-      { $set: { profile: profile } }
-    ).exec();
+    // await User.findOneAndUpdate(
+    //   { username: newUserName },
+    //   { $set: { profile: profile } }
+    // ).exec();
 
     if (updatedUserName) {
       // update the username in the users collection
@@ -144,20 +144,20 @@ const updateProfile = async (req, res) => {
       ).exec();
 
       // update the username in the stories in the genres stories array
-      await Genre.updateMany(
-        // find all stories with the old username
-        { stories: { $elemMatch: { author: newUserName } } },
-        // replace all the old usernames with the new username
-        { $set: { "stories.$[].author": updatedUserName } }
-      ).exec();
+      // await Genre.updateMany(
+      //   // find all stories with the old username
+      //   { stories: { $elemMatch: { author: newUserName } } },
+      //   // replace all the old usernames with the new username
+      //   { $set: { "stories.$[].author": updatedUserName } }
+      // ).exec();
 
       // update the username in the stories in the user's stories array
-      await User.updateMany(
-        // find all stories with the old username
-        { "stories.author": newUserName },
-        // update the author field with the new username
-        { $set: { "stories.$.author": updatedUserName } }
-      ).exec();
+      // await User.updateMany(
+      //   // find all stories with the old username
+      //   { "stories.author": newUserName },
+      //   // update the author field with the new username
+      //   { $set: { "stories.$.author": updatedUserName } }
+      // ).exec();
     }
 
     res.status(200).json(result);
