@@ -8,10 +8,12 @@ const GenreSchema = new Schema({
     required: true,
     unique: true,
   },
-  stories: {
-    type: [Story.schema],
-    required: true,
-  },
+  stories: [
+    {
+      type: Schema.Types.ObjectId,
+      ref: "Story",
+    },
+  ],
 });
 
 module.exports = mongoose.model("Genre", GenreSchema);
