@@ -457,16 +457,10 @@ const deleteStory = async (req, res) => {
     _id: req?.params?.id,
   }).exec();
 
-  // // delete story from the user's stories
-  // const result2 = await User.updateMany(
-  //   {},
-  //   { $pull: { stories: { _id: req?.params?.id } } }
-  // ).exec();
-
   // delete story from all genres
   const result3 = await Genre.updateMany(
     {},
-    { $pull: { stories: { _id: req?.params?.id } } }
+    { $pull: { stories: req?.params?.id } }
   ).exec();
 
   // delete all comments associated with the story
