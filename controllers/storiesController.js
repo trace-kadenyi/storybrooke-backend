@@ -67,12 +67,15 @@ const createStory = async (req, res) => {
   for (let i = 0; i < req.body.genres.length; i++) {
     // find genre in db
     const genre = await Genre.findOne({ genre: story.genres[i] }).exec();
-    // check if story title exists in the genre
-    if (
-      genre.stories.find(
-        (story) => story.title === newTitle && story.author === req.body.author
-      )
-    ) {
+    // check if the title of the story is populated in the genre
+    const populatedStories = await Story.find({
+      _id: { $in: genre.stories },
+    }).exec();
+    const foundStories = populatedStories.filter(
+      (story) => story.title === newTitle && story.author === req.body.author
+    );
+
+    if (foundStories.length > 0) {
       // remove the genre from the story's genres array
       story.genres.splice(i, 1);
       i--;
@@ -96,16 +99,6 @@ const createStory = async (req, res) => {
   // push story to story collection
   const newStory = new Story(story);
   await newStory.save();
-
-  // // push story to user's collection, stories array
-  // const user = await User.findOne({
-  //   username: req.body.author,
-  // }).exec();
-
-  // if (user) {
-  //   user.stories.push(newStory);
-  //   await user.save();
-  // }
 
   // push genre collection
   for (let i = 0; i < story.genres.length; i++) {
@@ -138,10 +131,13 @@ const getAllStoriesInGenre = async (req, res) => {
       .json({ message: `No stories found in genre ${req.params.genre}.` });
   }
 
-  // sort stories by date (newest to oldest)
-  genre.stories.sort((a, b) => b.date - a.date);
+  // populate stories
+  const stories = await Story.find({ _id: { $in: genre.stories } }).exec();
 
-  res.status(200).json(genre.stories);
+  // sort stories by date (newest to oldest)
+  stories.sort((a, b) => b.date - a.date);
+
+  res.status(200).json(stories.map((story) => story.title));
 };
 
 // GET A STORY IN A SPECIFIC GENRE
@@ -161,7 +157,10 @@ const getStory = async (req, res) => {
       .json({ message: `Genre ${req.params.genre} not found.` });
   }
   //   check if story exists
-  const story = genre.stories.find((story) => story.title === req.body.title);
+  const story = await Story.findOne({
+    _id: { $in: genre.stories },
+    title: req.body.title,
+  }).exec();
 
   if (!story) {
     return res
@@ -356,11 +355,16 @@ const updateStory = async (req, res) => {
   // check if story title exists in the genre
   for (let i = 0; i < newStory.genres.length; i++) {
     const genre = await Genre.findOne({ genre: newStory.genres[i] }).exec();
-    if (
-      genre.stories.find(
-        (story) => story.title === newTitle && story.author === req.body.author
-      )
-    ) {
+
+    const populatedStories = await Story.find({
+      _id: { $in: genre.stories },
+    }).exec();
+
+    const foundStories = populatedStories.filter(
+      (story) => story.title === newTitle && story.author === req.body.author
+    );
+
+    if (foundStories.length > 0) {
       // remove the genre from the story's genres array
       newStory.genres.splice(i, 1);
       i--;
@@ -400,20 +404,6 @@ const updateStory = async (req, res) => {
       },
     }
   ).exec();
-
-  // // update story in user's stories
-  // const resultInUser = await User.updateMany(
-  //   { stories: { $elemMatch: { _id: req?.params?.id } } },
-  //   {
-  //     $set: {
-  //       "stories.$.title": newStory.title ? newStory.title : story.title,
-  //       "stories.$.author": newStory.author ? newStory.author : story.author,
-  //       "stories.$.body": newStory.body ? newStory.body : story.body,
-  //       "stories.$.genres": newStory.genres ? newStory.genres : story.genres,
-  //       "stories.$.date": new Date(),
-  //     },
-  //   }
-  // ).exec();
 
   res.status(200).json({
     message: `The story ${newTitle} has been successfully updated in genres ${req.body.genres}. Note: If any of the specified genres are missing, it is because the story's title already exists in that genre.`,
