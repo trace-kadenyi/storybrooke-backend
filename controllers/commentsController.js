@@ -66,21 +66,6 @@ const createComment = async (req, res) => {
     story.comments.push(newComment);
     //   save story
     await story.save();
-
-    // find the story in genres and add comment to it
-    await Genre.updateMany(
-      {
-        stories: { $elemMatch: { _id: storyId } },
-      },
-      { $push: { "stories.$.comments": newComment } }
-    ).exec();
-
-    // // add comment to user stories
-    // await User.updateOne(
-    //   { stories: { $elemMatch: { _id: storyId } } },
-    //   { $push: { "stories.$.comments": newComment } }
-    // ).exec();
-
     //  send response
     res.status(201).json({
       comment: newComment,
@@ -100,20 +85,28 @@ const getComments = async (req, res) => {
   }
 
   //   get story id from params
-  const storyId = req?.params?.id;
+  const story = await Story.findOne({ _id: req.params.id }).exec();
 
-  //   check if story id is valid
-  const story = await Story.findOne({ _id: storyId });
   if (!story) {
-    res.status(404).json({ message: "Story not found" });
-    return;
+    return res
+      .status(404)
+      .json({ message: `Story with id ${req.params.id} not found.` });
   }
 
-  //   get comments
-  const comments = story.comments;
+  // if no comments in story
+  if (story.comments.length === 0) {
+    return res
+      .status(200)
+      .json({ message: `No comments found in story ${req.params.id}.` });
+  }
 
-  //   send response
-  res.status(200).json(comments);
+  // populate comments
+  const comments = await Comment.find({ _id: { $in: story.comments } }).exec();
+
+  // sort comments by date (newest to oldest)
+  comments.sort((a, b) => b.date - a.date);
+
+  res.status(200).json(comments.map((comment) => comment));
 };
 
 // DELETE A COMMENT
@@ -138,20 +131,7 @@ const deleteComment = async (req, res) => {
   //   delete comment
   try {
     await Comment.deleteOne({ _id: commentId });
-    await Story.updateOne(
-      { comments: { $elemMatch: { _id: commentId } } },
-      { $pull: { comments: { _id: commentId } } }
-    ).exec();
-
-    await Genre.updateMany(
-      { "stories.comments": { $elemMatch: { _id: commentId } } },
-      { $pull: { "stories.$.comments": { _id: commentId } } }
-    ).exec();
-
-    // await User.updateMany(
-    //   { "stories.comments": { $elemMatch: { _id: commentId } } },
-    //   { $pull: { "stories.$.comments": { _id: commentId } } }
-    // ).exec();
+    await Story.updateOne({}, { $pull: { comments: req?.params?.id } }).exec();
 
     res.status(200).json({ message: "Comment deleted" });
   } catch (err) {
@@ -220,24 +200,6 @@ const updateComment = async (req, res) => {
   // update comment
   try {
     await Comment.updateOne({ _id: commentId }, newComment);
-
-    // update in story
-    await Story.updateOne(
-      { comments: { $elemMatch: { _id: commentId } } },
-      { $set: { "comments.$": newComment } }
-    ).exec();
-
-    // update in genres
-    await Genre.updateMany(
-      { "stories.comments": { $elemMatch: { _id: commentId } } },
-      { $set: { "stories.$[story].comments.$[comment]": newComment } },
-      {
-        arrayFilters: [
-          { "story.comments._id": commentId },
-          { "comment._id": commentId },
-        ],
-      }
-    ).exec();
 
     // send response
     res.status(200).json({ message: "Comment updated" });
@@ -344,94 +306,6 @@ const createCommentReply = async (req, res) => {
 };
 
 // DELETE REPLY
-// const deleteReply = async (req, res) => {
-//   // check if no params
-//   if (!req?.params?.id) {
-//     res.status(400).json({ message: "No comment id provided" });
-//     return;
-//   }
-
-//   //   get comment id from params
-//   const commentId = req?.params?.id;
-
-//   //   check if comment id is valid
-//   const comment = await Comment.findOne({ _id: commentId });
-
-//   if (!comment) {
-//     res.status(404).json({ message: "Comment not found" });
-//     return;
-//   }
-
-//   // check if the comment has a reply with the given id
-//   const reply = comment.reply.find((reply) => reply._id == req.body.replyId);
-
-//   if (!reply) {
-//     res.status(404).json({ message: "Reply not found" });
-//     return;
-//   }
-
-//   try {
-//     // delete reply from comment
-//     const comment = await Comment.findById(commentId).exec();
-//     comment.reply = comment.reply.filter(
-//       (reply) => reply._id != req.body.replyId
-//     );
-//     await comment.save();
-
-//     // delete reply from story
-//     const storyComment = await Story.findOne({
-//       comments: { $elemMatch: { _id: commentId } },
-//     }).exec();
-
-//     storyComment.comments.forEach((comment) => {
-//       comment.reply = comment.reply.filter(
-//         (reply) => reply._id != req.body.replyId
-//       );
-//     });
-
-//     await storyComment.save();
-
-//     // delete reply from genre
-//     const genreStories = await Genre.find({
-//       stories: { $elemMatch: { comments: { $elemMatch: { _id: commentId } } } },
-//     });
-//     genreStories.forEach(async (genre) => {
-//       const story = genre.stories.find((story) =>
-//         story.comments.find((comment) => comment._id == commentId)
-//       );
-//       const comment = story.comments.find(
-//         (comment) => comment._id == commentId
-//       );
-//       comment.reply = comment.reply.filter(
-//         (reply) => reply._id != req.body.replyId
-//       );
-//       await genre.save();
-//     });
-
-//     // // delete reply from user
-//     // const userStories = await User.find({
-//     //   stories: { $elemMatch: { comments: { $elemMatch: { _id: commentId } } } },
-//     // });
-
-//     // userStories.forEach(async (user) => {
-//     //   const story = user.stories.find((story) =>
-//     //     story.comments.find((comment) => comment._id == commentId)
-//     //   );
-//     //   const comment = story.comments.find(
-//     //     (comment) => comment._id == commentId
-//     //   );
-//     //   comment.reply = comment.reply.filter(
-//     //     (reply) => reply._id != req.body.replyId
-//     //   );
-//     //   await user.save();
-//     // });
-
-//     res.status(200).json({ message: "Reply deleted" });
-//   } catch (err) {
-//     res.status(400).json({ message: err.message });
-//   }
-// };
-
 const deleteReply = async (req, res) => {
   // check if no params
   if (!req?.params?.id) {
