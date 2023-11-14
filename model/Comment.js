@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
+const Story = require("./Story");
 
 const CommentSchema = new Schema({
   commenter: {
@@ -19,6 +20,10 @@ const CommentSchema = new Schema({
     type: String,
     default: new Date().toLocaleTimeString(),
     required: true,
+  },
+  story: {
+    type: Schema.Types.ObjectId,
+    ref: "Story",
   },
   reply: {
     type: [this],
