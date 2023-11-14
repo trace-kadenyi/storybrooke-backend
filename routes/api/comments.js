@@ -14,8 +14,8 @@ router
   // Delete a comment by id
   .delete(commentsController.deleteComment)
 
-  // create a reply
-  .put(commentsController.createCommentReply);
+  // // create a reply
+  // .put(commentsController.createCommentReply);
 
 // Update a comment by id
 router.route("/edit/:id").put(commentsController.updateComment);
@@ -25,5 +25,8 @@ router.route("/reply/:id").delete(commentsController.deleteReply);
 
 // get replies
 router.route("/replies/:id").get(commentsController.getReplies);
+
+// create a reply
+router.route("/reply/:id").post(commentsController.createCommentReply);
 
 module.exports = router;
