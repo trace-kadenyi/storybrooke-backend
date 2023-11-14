@@ -137,7 +137,7 @@ const getAllStoriesInGenre = async (req, res) => {
   // sort stories by date (newest to oldest)
   stories.sort((a, b) => b.date - a.date);
 
-  res.status(200).json(stories.map((story) => story.title));
+  res.status(200).json(stories.map((story) => story));
 };
 
 // GET A STORY IN A SPECIFIC GENRE
