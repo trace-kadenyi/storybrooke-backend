@@ -7,10 +7,10 @@ const Reply = require("../model/Reply");
 // CREATE A NEW COMMENT
 const createComment = async (req, res) => {
   // check if no params
-  if (!req?.params?.id) {
-    res.status(400).json({ message: "No story id provided" });
-    return;
-  }
+  // if (!req?.params?.id) {
+  //   res.status(400).json({ message: "No story id provided" });
+  //   return;
+  // }
 
   //   get story id from params
   const storyId = req?.params?.id;
@@ -37,20 +37,20 @@ const createComment = async (req, res) => {
   const time = dateObj.toLocaleTimeString();
 
   //  check if no commenter or body
-  if (!commenter || !body) {
-    res.status(400).json({ message: "Both commenter and body are required" });
-    return;
-  }
+  // if (!commenter || !body) {
+  //   res.status(400).json({ message: "Both commenter and body are required" });
+  //   return;
+  // }
 
   //   check if commenter is a user
-  const user = await User.findOne({ username: commenter });
-  if (!user) {
-    res.status(404).json({
-      message:
-        "You have to be a registered user to comment on stories. Please sign up/sign in.",
-    });
-    return;
-  }
+  // const user = await User.findOne({ username: commenter });
+  // if (!user) {
+  //   res.status(404).json({
+  //     message:
+  //       "You have to be a registered user to comment on stories. Please sign up/sign in.",
+  //   });
+  //   return;
+  // }
 
   //   create new comment
   const newComment = new Comment({
@@ -144,16 +144,16 @@ const deleteComment = async (req, res) => {
 // UPDATE A COMMENT
 const updateComment = async (req, res) => {
   // check if no params
-  if (!req?.params?.id) {
-    res.status(400).json({ message: "No comment id provided" });
-    return;
-  }
+  // if (!req?.params?.id) {
+  //   res.status(400).json({ message: "No comment id provided" });
+  //   return;
+  // }
 
   // check if no commenter and body
-  if (!req.body.commenter || !req.body.body) {
-    res.status(400).json({ message: "Both commenter and body are required" });
-    return;
-  }
+  // if (!req.body.commenter || !req.body.body) {
+  //   res.status(400).json({ message: "Both commenter and body are required" });
+  //   return;
+  // }
 
   //   get comment id from params
   const commentId = req?.params?.id;
@@ -187,19 +187,19 @@ const updateComment = async (req, res) => {
   };
 
   // check if commenter is a user
-  if (!(await User.findOne({ username: newComment.commenter }))) {
-    res.status(404).json({
-      message:
-        "You have to be a registered user to comment on stories. Please sign up/sign in.",
-    });
-    return;
-  }
+  // if (!(await User.findOne({ username: newComment.commenter }))) {
+  //   res.status(404).json({
+  //     message:
+  //       "You have to be a registered user to comment on stories. Please sign up/sign in.",
+  //   });
+  //   return;
+  // }
 
   // check if commenter isn't the owner of the comment
-  if (comment.commenter !== newComment.commenter) {
-    res.status(400).json({ message: "You can't edit someone else's comment" });
-    return;
-  }
+  // if (comment.commenter !== newComment.commenter) {
+  //   res.status(400).json({ message: "You can't edit someone else's comment" });
+  //   return;
+  // }
   // update comment
   try {
     await Comment.updateOne({ _id: commentId }, newComment);
@@ -214,10 +214,10 @@ const updateComment = async (req, res) => {
 // CREATE COMMENT REPLY
 const createCommentReply = async (req, res) => {
   // check if no params
-  if (!req?.params?.id) {
-    res.status(400).json({ message: "No comment id provided" });
-    return;
-  }
+  // if (!req?.params?.id) {
+  //   res.status(400).json({ message: "No comment id provided" });
+  //   return;
+  // }
 
   //   get comment id from params
   const commentId = req?.params?.id;
@@ -245,20 +245,20 @@ const createCommentReply = async (req, res) => {
   const time = dateObj.toLocaleTimeString();
 
   //  check if no commenter or body
-  if (!commenter || !body) {
-    res.status(400).json({ message: "Both commenter and body are required" });
-    return;
-  }
+  // if (!commenter || !body) {
+  //   res.status(400).json({ message: "Both commenter and body are required" });
+  //   return;
+  // }
 
   //   check if commenter is a user
-  const user = await User.findOne({ username: commenter });
-  if (!user) {
-    res.status(404).json({
-      message:
-        "You have to be a registered user to comment on stories. Please sign up/sign in.",
-    });
-    return;
-  }
+  // const user = await User.findOne({ username: commenter });
+  // if (!user) {
+  //   res.status(404).json({
+  //     message:
+  //       "You have to be a registered user to comment on stories. Please sign up/sign in.",
+  //   });
+  //   return;
+  // }
 
   // creste new reply
 
