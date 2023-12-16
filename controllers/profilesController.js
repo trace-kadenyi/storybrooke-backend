@@ -122,12 +122,6 @@ const updateProfile = async (req, res) => {
   try {
     const result = await profile.save();
 
-    // save the new profile in the user's profile field
-    // await User.findOneAndUpdate(
-    //   { username: newUserName },
-    //   { $set: { profile: profile } }
-    // ).exec();
-
     if (updatedUserName) {
       // update the username in the users collection
       await User.findOneAndUpdate(
@@ -142,22 +136,6 @@ const updateProfile = async (req, res) => {
         // update the author field with the new username
         { $set: { author: updatedUserName } }
       ).exec();
-
-      // update the username in the stories in the genres stories array
-      // await Genre.updateMany(
-      //   // find all stories with the old username
-      //   { stories: { $elemMatch: { author: newUserName } } },
-      //   // replace all the old usernames with the new username
-      //   { $set: { "stories.$[].author": updatedUserName } }
-      // ).exec();
-
-      // update the username in the stories in the user's stories array
-      // await User.updateMany(
-      //   // find all stories with the old username
-      //   { "stories.author": newUserName },
-      //   // update the author field with the new username
-      //   { $set: { "stories.$.author": updatedUserName } }
-      // ).exec();
     }
 
     res.status(200).json(result);
