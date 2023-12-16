@@ -1,5 +1,7 @@
 const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
+const Story = require("./Story");
+const Reply = require("./Reply");
 
 const CommentSchema = new Schema({
   commenter: {
@@ -20,9 +22,16 @@ const CommentSchema = new Schema({
     default: new Date().toLocaleTimeString(),
     required: true,
   },
-  reply: {
-    type: [this],
+  story: {
+    type: Schema.Types.ObjectId,
+    ref: "Story",
   },
+  replies: [
+    {
+      type: Schema.Types.ObjectId,
+      ref: "Reply",
+    },
+  ],
 });
 
 module.exports = mongoose.model("Comment", CommentSchema);

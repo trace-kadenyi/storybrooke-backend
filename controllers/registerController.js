@@ -34,7 +34,7 @@ const handleNewUser = async (req, res) => {
       firstname: newFirstName,
       lastname: newLastName,
       username: newUser,
-      profile: profile,
+      profileId: profile._id,
       password: hashedPwd,
     });
 

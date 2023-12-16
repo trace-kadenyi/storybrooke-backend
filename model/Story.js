@@ -10,7 +10,7 @@ const StorySchema = new Schema({
   author: {
     type: String,
     required: true,
-    default: "Anonymous", 
+    default: "Anonymous",
   },
   body: {
     type: [String],
@@ -25,9 +25,12 @@ const StorySchema = new Schema({
     default: new Date(),
     required: true,
   },
-  comments: {
-    type: [Comment.schema],
-  }
+  comments: [
+    {
+      type: Schema.Types.ObjectId,
+      ref: "Comment",
+    },
+  ],
 });
 
 module.exports = mongoose.model("Story", StorySchema);
