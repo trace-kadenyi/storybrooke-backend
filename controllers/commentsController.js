@@ -150,6 +150,7 @@ const updateComment = async (req, res) => {
     time: dateObj.toLocaleTimeString(),
     story: comment.story,
     replies: comment.replies,
+    edited: true,
   };
   // update comment
   try {
