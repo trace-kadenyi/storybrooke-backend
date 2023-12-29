@@ -224,21 +224,21 @@ const deleteReply = async (req, res) => {
     return;
   }
 
-  //   get reply id from params
+  // get reply id from params
   const replyId = req?.params?.id;
 
-  //   check if reply id is valid
-  const reply = await Reply.findOne({ _id: replyId });
+  // find the comment that contains the reply
+  const commentContainingReply = await Comment.findOne({ replies: replyId });
 
-  if (!reply) {
-    res.status(404).json({ message: "Reply not found" });
-    return;
-  }
-
-  //   delete reply
+  // delete reply
   try {
     await Reply.deleteOne({ _id: replyId });
-    await Comment.updateOne({}, { $pull: { replies: req?.params?.id } }).exec();
+
+    // delete reply from comment
+    await Comment.updateOne(
+      { _id: commentContainingReply._id },
+      { $pull: { replies: replyId } }
+    ).exec();
 
     res.status(200).json({ message: "Reply deleted" });
   } catch (err) {
