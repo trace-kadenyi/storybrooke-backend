@@ -22,6 +22,10 @@ const CommentSchema = new Schema({
     default: new Date().toLocaleTimeString(),
     required: true,
   },
+  edited: {
+    type: Boolean,
+    default: false,
+  },
   story: {
     type: Schema.Types.ObjectId,
     ref: "Story",
