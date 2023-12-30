@@ -14,12 +14,12 @@ const CommentSchema = new Schema({
   },
   date: {
     type: String,
-    default: new Date().toLocaleDateString(),
+    default: new Date(),
     required: true,
   },
   time: {
     type: String,
-    default: new Date().toLocaleTimeString(),
+    default: new Date(),
     required: true,
   },
   edited: {
