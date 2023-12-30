@@ -335,10 +335,10 @@ const updateStory = async (req, res) => {
     });
   }
 
-  // remove story from the db
+  // delete story from all genres
   const result = await Genre.updateMany(
-    { stories: { $elemMatch: { _id: req?.params?.id } } },
-    { $pull: { stories: { _id: req?.params?.id } } }
+    {},
+    { $pull: { stories: req?.params?.id } }
   ).exec();
 
   // check if genre exists and update story by removing non-existent genres
