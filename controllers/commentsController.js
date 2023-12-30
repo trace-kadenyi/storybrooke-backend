@@ -16,19 +16,21 @@ const createComment = async (req, res) => {
     return;
   }
 
-  let dateObj = new Date();
-  let options = {
-    year: "numeric",
-    month: "short",
-    day: "numeric",
-  };
+  // let dateObj = new Date();
+  // let options = {
+  //   year: "numeric",
+  //   month: "short",
+  //   day: "numeric",
+  // };
 
   const commenter =
     req.body.commenter.charAt(0).toUpperCase() +
     req.body.commenter.slice(1).toLowerCase();
   const body = req.body.body;
-  const date = dateObj.toLocaleDateString(undefined, options);
-  const time = dateObj.toLocaleTimeString();
+  // const date = dateObj.toLocaleDateString(undefined, options);
+  // const time = dateObj.toLocaleTimeString();
+  const date = new Date();
+  const time = new Date();
 
   //   create new comment
   const newComment = new Comment({
@@ -132,12 +134,12 @@ const updateComment = async (req, res) => {
     return;
   }
 
-  let dateObj = new Date();
-  let options = {
-    year: "numeric",
-    month: "short",
-    day: "numeric",
-  };
+  // let dateObj = new Date();
+  // let options = {
+  //   year: "numeric",
+  //   month: "short",
+  //   day: "numeric",
+  // };
 
   // new comment
   const newComment = {
@@ -146,8 +148,10 @@ const updateComment = async (req, res) => {
       req.body.commenter.charAt(0).toUpperCase() +
       req.body.commenter.slice(1).toLowerCase(),
     body: req.body.body,
-    date: dateObj.toLocaleDateString(undefined, options),
-    time: dateObj.toLocaleTimeString(),
+    // date: dateObj.toLocaleDateString(undefined, options),
+    // time: dateObj.toLocaleTimeString(),
+    date: new Date(),
+    time: new Date(),
     story: comment.story,
     replies: comment.replies,
     edited: true,
