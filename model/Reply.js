@@ -13,7 +13,7 @@ const ReplySchema = new Schema({
     },
     date: {
         type: String,
-        default: new Date().toLocaleDateString(),
+        default: new Date(),
         required: true,
     },
     time: {

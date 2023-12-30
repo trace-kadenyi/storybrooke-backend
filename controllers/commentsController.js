@@ -176,19 +176,21 @@ const createCommentReply = async (req, res) => {
     return;
   }
 
-  let dateObj = new Date();
-  let options = {
-    year: "numeric",
-    month: "short",
-    day: "numeric",
-  };
+  // let dateObj = new Date();
+  // let options = {
+  //   year: "numeric",
+  //   month: "short",
+  //   day: "numeric",
+  // };
 
   const commenter =
     req.body.commenter.charAt(0).toUpperCase() +
     req.body.commenter.slice(1).toLowerCase();
   const body = req.body.body;
-  const date = dateObj.toLocaleDateString(undefined, options);
-  const time = dateObj.toLocaleTimeString();
+  // const date = dateObj.toLocaleDateString(undefined, options);
+  const date = new Date();
+  // const time = dateObj.toLocaleTimeString();
+  const time = new Date().toLocaleTimeString();
 
   // creste new reply
   const newReply = new Reply({
@@ -207,6 +209,7 @@ const createCommentReply = async (req, res) => {
     //   save comment
     await comment.save();
     //  send response
+    console.log(newReply);
     res.status(201).json({
       reply: newReply,
       message: "Reply added successfully!",
