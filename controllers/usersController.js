@@ -93,6 +93,25 @@ const getUser = async (req, res) => {
   res.json(user);
 };
 
+// GET USER BY USERNAME
+const getUserByUsername = async (req, res) => {
+  if (!req?.params?.username)
+    return res.status(400).json({ message: "Username required." });
+
+  // capitalize username
+  req.params.username =
+    req.params.username.charAt(0).toUpperCase() +
+    req.params.username.slice(1).toLowerCase();
+
+  const user = await User.findOne({ username: req.params.username }).exec();
+  if (!user) {
+    return res
+      .status(204)
+      .json({ message: `No user matches name ${req.params.username}.` });
+  }
+  res.json(user.roles);
+};
+
 // GET USER INTERESTS
 const getUserInterests = async (req, res) => {
   // capitalize username
@@ -119,4 +138,5 @@ module.exports = {
   deleteUser,
   getUser,
   getUserInterests,
+  getUserByUsername,
 };
