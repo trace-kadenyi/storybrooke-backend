@@ -19,6 +19,10 @@ const handleNewUser = async (req, res) => {
   if (duplicate)
     return res.status(409).json({ message: "User already exists" }); // conflict
 
+  // if username is > 15 characters
+  if (newUser.length > 15)
+    return res.status(400).json({ message: "Username is too long" }); // conflict
+
   try {
     // encrypt the password
     const hashedPwd = await bcrypt.hash(pwd, 10);

@@ -21,6 +21,11 @@ const ReplySchema = new Schema({
         default: new Date().toLocaleTimeString(),
         required: true,
     },
+    likes: {
+        type: Number,
+        default: 0,
+        required: true,
+    },
     comment: {
         type: Schema.Types.ObjectId,
         ref: "Comment",
