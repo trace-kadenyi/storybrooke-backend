@@ -3,25 +3,6 @@ const Reply = require("../model/Reply");
 const User = require("../model/User");
 
 // update comment likes
-// const updateCommentLikes = async (req, res) => {
-//   // check if comment id is valid
-//   const comment = await Comment.findOne({ _id: req.params.id });
-
-//   if (!comment) {
-//     res.status(404).json({ message: "Comment not found" });
-//     return;
-//   }
-
-//   // update comment likes
-//   try {
-//     comment.likes = req.body.likes;
-//     await comment.save();
-//     res.status(200).json({ message: "Comment likes updated" });
-//   } catch (err) {
-//     res.status(400).json({ message: err.message });
-//   }
-// };
-
 const updateCommentLikes = async (req, res) => {
   try {
     // check if comment id is valid
