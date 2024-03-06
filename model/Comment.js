@@ -26,11 +26,18 @@ const CommentSchema = new Schema({
     type: Boolean,
     default: false,
   },
-  likes: {
-    type: Number,
-    default: 0,
-    required: true,
-  },
+  // likes: {
+  //   type: Number,
+  //   default: 0,
+  //   required: true,
+  // },
+  // likes: [
+  //   {
+  //     type: Schema.Types.ObjectId,
+  //     ref: "User",
+  //   },
+  // ],
+  likes: [String],
   story: {
     type: Schema.Types.ObjectId,
     ref: "Story",
