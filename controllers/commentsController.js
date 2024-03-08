@@ -15,20 +15,10 @@ const createComment = async (req, res) => {
     res.status(404).json({ message: "Story not found" });
     return;
   }
-
-  // let dateObj = new Date();
-  // let options = {
-  //   year: "numeric",
-  //   month: "short",
-  //   day: "numeric",
-  // };
-
   const commenter =
     req.body.commenter.charAt(0).toUpperCase() +
     req.body.commenter.slice(1).toLowerCase();
   const body = req.body.body;
-  // const date = dateObj.toLocaleDateString(undefined, options);
-  // const time = dateObj.toLocaleTimeString();
   const date = new Date();
   const time = new Date();
 
@@ -134,13 +124,6 @@ const updateComment = async (req, res) => {
     return;
   }
 
-  // let dateObj = new Date();
-  // let options = {
-  //   year: "numeric",
-  //   month: "short",
-  //   day: "numeric",
-  // };
-
   // new comment
   const newComment = {
     _id: commentId,
@@ -148,8 +131,6 @@ const updateComment = async (req, res) => {
       req.body.commenter.charAt(0).toUpperCase() +
       req.body.commenter.slice(1).toLowerCase(),
     body: req.body.body,
-    // date: dateObj.toLocaleDateString(undefined, options),
-    // time: dateObj.toLocaleTimeString(),
     date: new Date(),
     time: new Date(),
     story: comment.story,
