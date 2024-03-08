@@ -1,7 +1,5 @@
 const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
-const Story = require("./Story");
-const Reply = require("./Reply");
 
 const CommentSchema = new Schema({
   commenter: {
@@ -26,11 +24,7 @@ const CommentSchema = new Schema({
     type: Boolean,
     default: false,
   },
-  likes: {
-    type: Number,
-    default: 0,
-    required: true,
-  },
+  likes: [String],
   story: {
     type: Schema.Types.ObjectId,
     ref: "Story",

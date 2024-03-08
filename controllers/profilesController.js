@@ -2,6 +2,8 @@ const Profile = require("../model/Profile");
 const User = require("../model/User");
 const Genre = require("../model/Genre");
 const Story = require("../model/Story");
+const Comment = require("../model/Comment");
+const Reply = require("../model/Reply");
 
 // GET USER PROFILE
 const getProfile = async (req, res) => {
@@ -135,6 +137,32 @@ const updateProfile = async (req, res) => {
         { author: newUserName },
         // update the author field with the new username
         { $set: { author: updatedUserName } }
+      ).exec();
+
+      // update comments with the new username
+      await Comment.updateMany(
+        // find all comments with the old username\
+        { commenter: newUserName },
+        // update the username field with the new username
+        { $set: { commenter: updatedUserName } }
+      ).exec();
+
+      // update the username in the replies
+      await Reply.updateMany(
+        // find all replies with the old username
+        { commenter: newUserName },
+        // update the username field with the new username
+        { $set: { commenter: updatedUserName } }
+      ).exec();
+
+      // update comment likes by the new username
+      await Comment.updateMany(
+        // find all likes that include the old username
+        { likes: newUserName },
+        // replace the old username with the new username in the likes array
+        { $set: { "likes.$[element]": updatedUserName } },
+        // arrayFilters to update the likes array
+        { arrayFilters: [{ element: newUserName }] }
       ).exec();
     }
 
