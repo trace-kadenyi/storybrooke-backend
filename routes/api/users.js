@@ -16,7 +16,7 @@ router.route("/:id").get(usersController.getUser);
 router.route("/username/:username").get(usersController.getUserByUsername);
 router.route("/interests/:username").get(usersController.getUserInterests);
 // router.route("/:username").delete(usersController.deleteUser);
-router.route(verifyRoles(ROLES_LIST.Admin, ROLES_LIST.User)).delete(usersController.deleteUser);
+router.route("/:username").delete(usersController.deleteUser);
 
 
 module.exports = router;

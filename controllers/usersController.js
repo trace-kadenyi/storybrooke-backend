@@ -2,6 +2,8 @@ const User = require("../model/User");
 const Story = require("../model/Story");
 const Profile = require("../model/Profile");
 const Genre = require("../model/Genre");
+const Comment = require("../model/Comment");
+const Reply = require("../model/Reply");
 const bcrypt = require("bcrypt");
 
 const getAllUsers = async (req, res) => {
@@ -53,27 +55,42 @@ const deleteUser = async (req, res) => {
       .status(404)
       .json({ message: `No user matches username ${req.params.username}.` });
 
-  // Delete user
-  const deletedUser = await User.deleteOne({
-    username: user.username,
-  }).exec();
-
-  // Delete user's profile
-  const deletedProfile = await Profile.deleteOne({
-    username: user.username,
-  }).exec();
-
   // Delete user's stories
-  const deletedStories = await Story.deleteMany({
+  const storiesToDelete = await Story.find({ author: user.username }).exec();
+  await Story.deleteMany({
     author: user.username,
   }).exec();
 
-  // delete stories from genres
-  const deletedGenres = await Genre.updateMany(
-    { stories: { $elemMatch: { author: user.username } } },
-    { $pull: { stories: { author: user.username } } }
+  // delete story ids from genres
+  await Genre.updateMany(
+    { stories: { $in: storiesToDelete.map((story) => story._id) } },
+    { $pull: { stories: { $in: storiesToDelete.map((story) => story._id) } } }
   ).exec();
 
+  // delete comments in stories
+  const commentsToDelete = await Comment.find({
+    story: { $in: storiesToDelete.map((story) => story._id) },
+  }).exec();
+  await Comment.deleteMany({
+    story: { $in: storiesToDelete.map((story) => story._id) },
+  }).exec();
+
+  // delete replies in comments
+  await Reply.deleteMany({
+    comment: { $in: commentsToDelete.map((comment) => comment._id) },
+  }).exec();
+
+  // Delete user's profile
+  await Profile.deleteOne({
+    username: user.username,
+  }).exec();
+
+  // Delete user
+  await User.deleteOne({
+    username: user.username,
+  }).exec();
+
+  // Return message
   res.status(200).json({
     message: `User ${req.params.username} deleted.`,
   });
