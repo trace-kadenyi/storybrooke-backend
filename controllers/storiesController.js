@@ -3,6 +3,7 @@ const Genre = require("../model/Genre");
 const User = require("../model/User");
 const Story = require("../model/Story");
 const Comment = require("../model/Comment");
+const Reply = require("../model/Reply");
 
 // CREATE A NEW STORY
 const createStory = async (req, res) => {
@@ -453,22 +454,25 @@ const deleteStory = async (req, res) => {
   }
 
   // remove story from the db
-  const result = await Story.deleteOne({
+  await Story.deleteOne({
     _id: req?.params?.id,
   }).exec();
 
   // delete story from all genres
-  const result3 = await Genre.updateMany(
-    {},
-    { $pull: { stories: req?.params?.id } }
-  ).exec();
+  await Genre.updateMany({}, { $pull: { stories: req?.params?.id } }).exec();
 
   // delete all comments associated with the story
   const comments = story.comments;
 
-  // delete all comments from the db
-  const result4 = await Comment.deleteMany({
+  await Comment.deleteMany({
     _id: { $in: comments },
+  }).exec();
+
+  // delete all replies associated with the comments
+  const replies = await Reply.find({ comment: { $in: comments } }).exec();
+
+  await Reply.deleteMany({
+    _id: { $in: replies },
   }).exec();
 
   res.status(200).json({
