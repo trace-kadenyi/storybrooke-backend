@@ -103,7 +103,14 @@ const deleteComment = async (req, res) => {
   //   delete comment
   try {
     await Comment.deleteOne({ _id: commentId });
-    await Story.updateOne({}, { $pull: { comments: req?.params?.id } }).exec();
+    //  delete comment from story
+    await Story.updateOne(
+      { _id: comment.story },
+      { $pull: { comments: commentId } }
+    ).exec();
+
+    // delete replies in comment
+    await Reply.deleteMany({ comment: commentId }).exec();
 
     res.status(200).json({ message: "Comment deleted" });
   } catch (err) {
@@ -194,7 +201,6 @@ const createCommentReply = async (req, res) => {
     //   save comment
     await comment.save();
     //  send response
-    console.log(newReply);
     res.status(201).json({
       reply: newReply,
       message: "Reply added successfully!",
