@@ -1,6 +1,7 @@
 const Comment = require("../model/Comment");
 const Reply = require("../model/Reply");
 const User = require("../model/User");
+const Story = require("../model/Story");
 
 // update comment likes
 const updateCommentLikes = async (req, res) => {
@@ -100,9 +101,61 @@ const getReplyLikes = async (req, res) => {
   }
 };
 
+// update story likes
+const updateStoryLikes = async (req, res) => {
+  try {
+    // check if story id is valid
+    const story = await Story.findOne({ _id: req.params.id });
+
+    if (!story) {
+      return res.status(404).json({ message: "Story not found" });
+    }
+
+    // get username from body
+    const username = req.body.username;
+
+    // Check if the user has already liked the story
+    if (story.likes.includes(username)) {
+      // remove username
+      story.likes = story.likes.filter((like) => like !== username);
+      await story.save();
+      return res.status(200).json({ message: "Story unliked successfully" });
+    }
+
+    // Update story likes
+    story.likes.push(username);
+    await story.save();
+
+    return res.status(200).json({ message: "Story liked successfully" });
+  } catch (error) {
+    console.error("Error updating story likes:", error);
+    return res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+// get story likes
+const getStoryLikes = async (req, res) => {
+  try {
+    // check if story id is valid
+    const story = await Story.findOne({ _id: req.params.id });
+
+    if (!story) {
+      return res.status(404).json({ message: "Story not found" });
+    }
+
+    return res.status(200).json({ likes: story.likes.length });
+  } catch (error) {
+    console.error("Error getting story likes:", error);
+    return res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+
 module.exports = {
   updateCommentLikes,
   updateReplyLikes,
   getCommentLikes,
   getReplyLikes,
+  updateStoryLikes,
+  getStoryLikes,
 };
