@@ -2,7 +2,7 @@ const Genre = require("../model/Genre");
 
 // prettier-ignore
 const genres = [
-  "Fiction", "Non-Fiction", "Romance", "Thriller", "Who-done-it", "Historical", "Western", "Fantasy", "Paranormal", "Sci-Fi", "Food", "Fashion", "Mystery", "Horror", "Adventure", "Dystopian", "Young Adult", "Children's", "Coming of Age", "Folklore", "Poetry", "Technology", "Art", "Music", "Books", "Education", "Philosophy", "Psychology", "Society", "Environment", "Economics", "Crafts", "Gardening", "Home Improvement", "Travel", "Self-Help", "Health", "Fitness", "Biography", "Memoir", "Politics", "Religion", "Sports", "Entertainment"
+  "Fiction", "Non-Fiction", "Romance", "Thriller", "Who-done-it", "Historical", "Western", "Fantasy", "Paranormal", "Sci-Fi", "Food", "Fashion", "Mystery", "Horror", "Adventure", "Dystopian", "Young Adult", "Children's", "Coming of Age", "Folklore", "Poetry", "Technology", "Art", "Music", "Books", "Education", "Other", "Philosophy", "Psychology", "Society", "Environment", "Economics", "Crafts", "Gardening", "Home Improvement", "Travel", "Self-Help", "Health", "Fitness", "Biography", "Memoir", "Politics", "Religion", "Sports", "Entertainment"
 ];
 
 // set all genres to database based on model/Genre.js
