@@ -31,6 +31,7 @@ const StorySchema = new Schema({
       ref: "Comment",
     },
   ],
+  likes: [String],
 });
 
 module.exports = mongoose.model("Story", StorySchema);
