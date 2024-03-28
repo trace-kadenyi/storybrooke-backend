@@ -135,8 +135,15 @@ const getAllStoriesInGenre = async (req, res) => {
   // populate stories
   const stories = await Story.find({ _id: { $in: genre.stories } }).exec();
 
-  // sort stories by date (newest to oldest)
-  stories.sort((a, b) => b.date - a.date);
+  // // sort stories by date (newest to oldest)
+  // stories.sort((a, b) => b.date - a.date);
+
+  // sort in terms of likes + comments length
+  stories.sort((a, b) => {
+    return (
+      b.likes.length + b.comments.length - (a.likes.length + a.comments.length)
+    );
+  });
 
   res.status(200).json(stories.map((story) => story));
 };
@@ -192,7 +199,14 @@ const getStoryGlobal = async (req, res) => {
   }
 
   // sort stories by date (newest to oldest)
-  stories.sort((a, b) => b.date - a.date);
+  // stories.sort((a, b) => b.date - a.date);
+
+  // sort in terms of likes + comments length
+  stories.sort((a, b) => {
+    return (
+      b.likes.length + b.comments.length - (a.likes.length + a.comments.length)
+    );
+  });
 
   res.status(200).json(stories);
 };
@@ -241,7 +255,16 @@ const getStoriesByAuthor = async (req, res) => {
         .json({ message: `No stories have been published anonymously yet.` });
     } else {
       // sort by date published in descending order
-      anonymousStories.sort((a, b) => b.date - a.date);
+      // anonymousStories.sort((a, b) => b.date - a.date);
+
+      // sort in terms of likes + comments length
+      anonymousStories.sort((a, b) => {
+        return (
+          b.likes.length +
+          b.comments.length -
+          (a.likes.length + a.comments.length)
+        );
+      });
 
       return res.status(200).json(anonymousStories);
     }
@@ -261,7 +284,14 @@ const getStoriesByAuthor = async (req, res) => {
   }
 
   // sort by date published in descending order
-  stories.sort((a, b) => b.date - a.date);
+  // stories.sort((a, b) => b.date - a.date);
+
+  // sort in terms of likes + comments length
+  stories.sort((a, b) => {
+    return (
+      b.likes.length + b.comments.length - (a.likes.length + a.comments.length)
+    );
+  });
 
   res.status(200).json(stories);
 };
@@ -420,7 +450,14 @@ const getAllStoriesGlobal = async (req, res) => {
   }
 
   // sort by date in descending order
-  stories.sort((a, b) => b.date - a.date);
+  // stories.sort((a, b) => b.date - a.date);
+
+  // sort in terms of likes + comments length
+  stories.sort((a, b) => {
+    return (
+      b.likes.length + b.comments.length - (a.likes.length + a.comments.length)
+    );
+  });
 
   // return all stories
   res.status(200).json({ stories });
