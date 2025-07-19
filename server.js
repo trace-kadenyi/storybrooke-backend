@@ -23,10 +23,10 @@ app.use(bodyParser.json({limit: "50mb"}));
 app.use(bodyParser.urlencoded({limit: "50mb", extended: true, parameterLimit:50000}));
 
 // custom middleware
-app.use((req, res, next) => {
-  console.log(`${req.method} request for ${req.url}`);
-  next();
-});
+// app.use((req, res, next) => {
+//   console.log(`${req.method} request for ${req.url}`);
+//   next();
+// });
 // Middleware to handle urlencoded data
 app.use(express.urlencoded({ extended: false }));
 
