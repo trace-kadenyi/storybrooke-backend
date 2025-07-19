@@ -112,6 +112,7 @@ const createStory = async (req, res) => {
 
   res.status(201).json({
     message: `The story ${story.title} has been successfully published in genres ${story.genres}. Note: If any of the specified genres are missing, it is because the story's title already exists in that genre.`,
+    storyId: newStory._id,
   });
 };
 
